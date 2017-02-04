@@ -3,62 +3,60 @@
 
 // Given starting positions and jump lengths, print whether two kangaroos will ever land in the same position after the same number of jumps.
 
-// CONSTANTS
-
-const MAX_LOOPS = 10000;
-
 // CLASSES
 
-// KANGAROO CLASS
-function Kangaroo(startingPosition, jumpDistance) {
-  var position = startingPosition;
-  var jumpDistance = jumpDistance;
-
-  this.jump = function() {
-    position += jumpDistance;
-  }
-
-  this.getPosition = function() {
-    return position;
-  }
+function Kangaroo(startingPos, jumpDistance) {
+  this.startingPos = startingPos;
+  this.jumpDistance = jumpDistance;
 }
 
 // FUNCTIONS
 
-function checkForMatchingPositions(kangarooA, kangarooB) {
-  let doPositionsMatch = false;
-  let positionA = kangarooA.getPosition();
-  let positionB = kangarooB.getPosition();
+function quarryCaughtOnSameJump(chaser, quarry) {
+  const possibleToCatch = canChaserCatchUp(chaser, quarry);
 
-  for (let i = 0; i < MAX_LOOPS; i++) {
-    kangarooA.jump();
-    kangarooB.jump();
+  if (!possibleToCatch) {
+    return false;
+  } else {
+    const caughtBetweenJumps = isCatchDistanceInteger(chaser, quarry);
 
-    positionA = kangarooA.getPosition();
-    positionB = kangarooB.getPosition();
+    return caughtBetweenJumps;
+  }
+}
 
-    if (positionA === positionB) {
-      doPositionsMatch = true;
-    }
+function canChaserCatchUp(chaser, quarry) {
+  const chaserSpeed = chaser.jumpDistance;
+  const quarrySpeed = quarry.jumpDistance;
+
+  if (chaserSpeed <= quarrySpeed) {
+    return false;
   }
 
-  return doPositionsMatch;
+  return true;
+}
+
+function isCatchDistanceInteger(chaser, quarry) {
+  const chaserSpeed = chaser.jumpDistance;
+  const chaserStart = chaser.startingPos;
+
+  const quarrySpeed = quarry.jumpDistance;
+  const quarryStart = quarry.startingPos;
+
+  const catchDistance = (chaserStart - quarryStart) / (quarrySpeed - chaserSpeed);
+
+  const isInteger = catchDistance % 1 === 0;
+
+  return isInteger;
 }
 
 // MAIN
 
 (function main() {
-  const kangarooA = new Kangaroo(0, 5);
-  const kangarooB = new Kangaroo(10, 2);
-  const matchingPositions = checkForMatchingPositions(kangarooA, kangarooB);
+  const chaserKangaroo = new Kangaroo(0, 3);
+  const quarryKangaroo = new Kangaroo(4, 2);
 
-  let result = '';
+  const caughtOnSameJump = quarryCaughtOnSameJump(chaserKangaroo, quarryKangaroo);
+  const output = caughtOnSameJump ? 'YES' : 'NO';
 
-  if (matchingPositions) {
-    result = 'YES';
-  } else {
-    result = 'NO';
-  }
-
-  console.log(result);
+  console.log(output);
 }());
